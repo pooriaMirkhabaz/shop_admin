@@ -1,0 +1,59 @@
+html,
+body {
+  font-family: iranSansLight !important ;
+}
+
+.dashboard-container {
+  max-width: 100%;
+}
+.navbar {
+  padding: 0 12px;
+}
+.mainSection {
+  padding: 0 6px;
+}
+
+.Sidebar {
+  margin: 18px 0;
+  padding: 0 0 0 6px;
+}
+
+.contentSection {
+  margin: 18px 0;
+  padding:12px;
+}
+.content{
+  padding: 0 12px;
+}
+
+.ListItemText{
+  text-align: right !important;
+}
+
+.listmenuItems{
+  margin: 0 22px !important;
+}
+
+.listmenuItems a, .listmenuItems span{
+  color: rgb(80, 80, 80);
+  text-decoration: none !important;
+  font-size: 15px !important;
+}
+.MuiFormControl-root label{
+  right: 32px;
+}
+
+.MuiInputLabel-formControl{
+  transform-origin: top right !important;
+}
+
+legend, label {
+  text-align: right !important;
+}
+
+
+@media screen and (max-width: 992px) {
+  .Sidebar {
+    padding: 0 !important;
+  }
+}
