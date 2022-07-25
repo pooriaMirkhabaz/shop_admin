@@ -4,6 +4,7 @@ import ICategoryGroup from '../components/category/attribute/ICategoryGroup'
 import { v4 as uuid } from 'uuid'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import Http from '../services/Http'
+import IRootState from './IRootState'
 
 export interface ICategoryState {
     title : string;
@@ -14,13 +15,7 @@ export interface ICategoryState {
 export const CategoryInitState : ICategoryState = {
   title: '',
   slug: '',
-  groups: [
-    {
-      hash: '7b11971f-73a6-4f95-b249-d2ac5f47f0f5',
-      title: 'مشخصات کلی ',
-      attributes: []
-    }
-  ]
+  groups: []
 }
 
 export interface IAction {
@@ -29,8 +24,10 @@ export interface IAction {
 }
 
 export const saveCategory = createAsyncThunk('category/save', async (data, thunkAPI) => {
-  const state = thunkAPI.getState() as object
-  console.log(state.category as object)
+  const HttpRequest = new Http()
+  const categoryState :IRootState = thunkAPI.getState() as IRootState
+  const response = await HttpRequest.post('/api/v1/category', categoryState.category)
+  return response
 })
 
 const CategorySlice = createSlice({
@@ -92,7 +89,7 @@ const CategorySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(saveCategory.fulfilled, (state : ICategoryState, action : IAction) => {
-      console.log(state)
+      state = { ...CategoryInitState }
     })
   }
 })

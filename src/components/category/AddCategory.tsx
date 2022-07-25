@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react'
 import { Box, Divider, FormControl, TextField, Theme } from '@mui/material'
 import Content from '../partials/Content'
@@ -13,6 +14,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addNewCategoryGroup, saveCategory, UpdateCategory } from '../../store/categorySlice'
 import IRootState from '../../store/IRootState'
 import ICategoryGroup from './attribute/ICategoryGroup'
+import Stack from '@mui/material/Stack'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const useStyles = makeStyles((theme : Theme) =>
   createStyles({
@@ -23,6 +26,9 @@ const useStyles = makeStyles((theme : Theme) =>
       margin: '12px 0 !important'
     },
     titleError: {
+      color: 'red'
+    },
+    attributeError: {
       color: 'red'
     },
     Add: {
@@ -42,10 +48,13 @@ export default function AddCategory () {
   const styles = useStyles()
 
   const dispatch = useDispatch<any>()
-  const categoryGroups = useSelector((state : IRootState) => state.category.groups)
+  const category = useSelector((state : IRootState) => state.category)
   const [open, setOpen] = useState<boolean>(false)
+  const [status, setStatus] = useState<boolean>(false)
   const [groupTitle, setGroupTitle] = useState<string>('')
   const [groupTitleError, setGroupTitleError] = useState<boolean>(false)
+  const [attributeError, setAttributeError] = useState<boolean>(false)
+  const [categoryError, setCategoryError] = useState<boolean>(false)
 
   const handleShowDialog = () => {
     setOpen(true)
@@ -71,7 +80,19 @@ export default function AddCategory () {
   }
 
   const handleSaveCategory = async () => {
-    dispatch(saveCategory())
+    if (!category.title.trim() && !category.slug.trim() && category.groups.length === 0) {
+      setCategoryError(true)
+    } else if (category.groups[0].attributes.length === 0) {
+      setAttributeError(true)
+    } else {
+      setAttributeError(false)
+      setCategoryError(false)
+      dispatch(saveCategory())
+      setStatus(true)
+      setTimeout(() => {
+        setStatus(false)
+      }, 1000)
+    }
   }
 
   return (
@@ -110,7 +131,7 @@ export default function AddCategory () {
                     </Box>
 
                     {/* category groups */}
-                    {categoryGroups.map((group : ICategoryGroup) => <CategoryGroup key={group.hash} {...group} />)}
+                    {category.groups.map((group : ICategoryGroup) => <CategoryGroup key={group.hash} {...group} />)}
 
                     <Divider className={styles.divider} />
                     {/* add new category group */}
@@ -120,9 +141,18 @@ export default function AddCategory () {
 
                     {/* add new category */}
                     <Box component="div" className={styles.saveBox}>
-                        <Button color='success' className={styles.dialog} onClick={handleSaveCategory} variant='contained' startIcon={<Save className={styles.Add}/>} >ذخیره</Button>
-                    </Box>
 
+                      {!status && (
+                        <Button color='success' className={styles.dialog} onClick={handleSaveCategory} variant='contained' startIcon={<Save className={styles.Add} />} >ذخیره</Button>
+                      )}
+                      {status && (
+                         <Stack sx={{ color: 'grey.500' }} spacing={2} direction="row">
+                         <CircularProgress color="success" />
+                       </Stack>
+                      )}
+                    </Box>
+                    {attributeError && <Box component="div" className={styles.attributeError}>* برای گروه مورد نظر ویژگی ها را وارد کنید</Box>}
+                    {categoryError && <Box component="div" className={styles.titleError}>* برای دسته بندی مورد نظر گروه ایجاد کنید و برای گروه ایجاد شده ویژگی اضافه کنید</Box>}
             </Content>
   )
 }
